@@ -58,7 +58,7 @@ const key=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
 let listRequest=0,historyLoaded=false,historyResults=[],activeRequests=0,listScroll=0;
 function msg(s){$('message').textContent=s||'';$('message').classList.toggle('hide',!s);if(s) window.scrollTo(0,0)}
 function busy(on){document.querySelectorAll('button').forEach(b=>b.disabled=on);$('signBtn').disabled=on||!savedSignature;$('saveSignature').disabled=on||!ink;$('loadingOverlay').classList.toggle('hide',!on)}
-const API_URL='https://script.google.com/macros/s/AKfycbyufCgLbx0VKL4EaRscaiocMI6PHpxlRpT7owrPjHRCj2BZAPbKShu7yRPwa-h0BI4x1Q/exec';
+const API_URL='https://script.google.com/macros/s/AKfycbxhTc3UI9PoyoQT-UjZQSv4zGnpeQSGKbcEGWSd0cShg8EIvukjZnT091U_P1yPT3jVxg/exec';
 async function apiRequest(name,args,quiet=false){if(!quiet){activeRequests++;busy(true);msg('')}const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),120000);try{const response=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:name,args}),signal:controller.signal});if(!response.ok)throw Error('伺服器回應異常：'+response.status);const result=await response.json();if(!result.ok){const e=Error(result.message||'操作失敗');e.definitive=true;throw e}return result.value}catch(e){if(!quiet)msg(e.name==='AbortError'?'連線逾時，請先確認案件狀態，再重試原操作。':e.message||String(e));throw e}finally{clearTimeout(timer);if(!quiet){activeRequests--;busy(activeRequests>0)}}}
 function api(name,...args){return apiRequest(name,args)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
